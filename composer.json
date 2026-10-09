@@ -1,0 +1,32 @@
+{
+    "name": "cristhcasco/sg-dnit",
+    "description": "Consulta local de contribuyentes de la DNIT (Paraguay), cálculo de DV y formulario de cliente compartido para los sistemas SG",
+    "type": "library",
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "Cristhian Casco"
+        }
+    ],
+    "require": {
+        "php": "^7.4|^8.0",
+        "ext-zip": "*",
+        "illuminate/support": "^8.0",
+        "illuminate/console": "^8.0",
+        "illuminate/database": "^8.0",
+        "guzzlehttp/guzzle": "^7.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "CristhCasco\\SgDnit\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "CristhCasco\\SgDnit\\SgDnitServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "stable"
+}
