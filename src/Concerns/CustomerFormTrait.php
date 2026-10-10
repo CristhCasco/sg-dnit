@@ -153,7 +153,8 @@ trait CustomerFormTrait
     {
         $isFisica = $this->person === 'FISICA';
         $hasRuc = $this->dv !== '';
-        $consumidorFinal = DB::table('tax_conditions')->where('code', 'CF')->value('id');
+        $contribuyente = $this->catalogId('tax_conditions', ['IVA', 'C'], ['IVA Responsable', 'Contribuyente']);
+        $consumidorFinal = $this->catalogId('tax_conditions', ['CF', 'NC'], ['Consumidor Final', 'No Contribuyente']);
         $keepTaxCondition = $this->tax_condition_id && (int) $this->tax_condition_id !== (int) $consumidorFinal;
 
         return [
@@ -172,11 +173,45 @@ trait CustomerFormTrait
             'birthday' => $this->birthday ?: null,
             'credit_limit' => $this->credit_limit !== '' ? $this->credit_limit : null,
 
-            'document_type_id' => DB::table('document_types')->where('name', $hasRuc ? 'RUC' : 'CI')->value('id'),
+            'document_type_id' => $hasRuc
+                ? $this->catalogId('document_types', ['RUC'], ['RUC', 'Registro Único del Contribuyente'])
+                : $this->catalogId('document_types', ['CI'], ['CI', 'Cédula de Identidad']),
             'tax_condition_id' => $hasRuc
-                ? ($keepTaxCondition ? $this->tax_condition_id : DB::table('tax_conditions')->where('code', 'IVA')->value('id'))
+                ? ($keepTaxCondition ? $this->tax_condition_id : $contribuyente)
                 : $consumidorFinal,
         ];
+    }
+
+    /**
+     * Id de un registro de catálogo. Las bases de los sistemas SG no son todas iguales:
+     * las creadas por migración tienen columna "code" (CI, RUC / C, NC) y otras solo "name"
+     * (RUC, CI) o códigos IVA / CF. Se busca primero por código y después por nombre.
+     */
+    protected function catalogId(string $table, array $codes, array $names)
+    {
+        static $cache = [];
+        $key = $table . '|' . implode(',', $codes) . '|' . implode(',', $names);
+        if (array_key_exists($key, $cache)) {
+            return $cache[$key];
+        }
+
+        $id = null;
+        if (\Illuminate\Support\Facades\Schema::hasColumn($table, 'code')) {
+            foreach ($codes as $code) {
+                if ($id = DB::table($table)->where('code', $code)->value('id')) {
+                    break;
+                }
+            }
+        }
+        if (!$id) {
+            foreach ($names as $name) {
+                if ($id = DB::table($table)->where('name', $name)->value('id')) {
+                    break;
+                }
+            }
+        }
+
+        return $cache[$key] = $id;
     }
 
     /**
