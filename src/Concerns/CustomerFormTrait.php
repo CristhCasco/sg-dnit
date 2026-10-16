@@ -83,8 +83,8 @@ trait CustomerFormTrait
     protected function messages()
     {
         return [
-            'person.required' => 'Elegí el tipo de persona',
-            'person.in' => 'Elegí el tipo de persona',
+            'person.required' => 'Elige el tipo de persona',
+            'person.in' => 'Elige el tipo de persona',
             'document_number.required' => 'El CI / RUC es requerido',
             'document_number.regex' => 'El CI / RUC debe tener solo números (entre 3 y 9 dígitos)',
             'dv.required' => 'El DV es requerido para personas jurídicas',
@@ -95,7 +95,7 @@ trait CustomerFormTrait
             'last_name.min' => 'El apellido debe tener al menos 2 caracteres',
             'company.required' => 'La razón social es requerida',
             'company.min' => 'La razón social debe tener al menos 3 caracteres',
-            'phone.regex' => 'Ingresá un celular paraguayo válido, ej: 0981123456',
+            'phone.regex' => 'Ingresa un celular paraguayo válido, ej: 0981123456',
             'email.email' => 'El correo no es válido',
             'birthday.before' => 'La fecha de nacimiento debe ser anterior a hoy',
             'birthday.after' => 'La fecha de nacimiento no es válida',
@@ -271,7 +271,7 @@ trait CustomerFormTrait
             $this->autoDetected = false;
             $this->dv = '';
             $this->dnitMessage = $dnit->hayDatos()
-                ? 'No figura como contribuyente en la DNIT: se registrará con CI (sin DV). Cargá los datos a mano.'
+                ? 'No figura como contribuyente en la DNIT: se registrará con CI (sin DV). Carga los datos a mano.'
                 : 'La base de la DNIT no está cargada. Ejecutá "php artisan dnit:importar".';
             return;
         }
