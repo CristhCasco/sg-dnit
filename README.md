@@ -41,6 +41,10 @@ Requiere Laravel 8, PHP con la extensión `zip`, y las tablas `customers`, `docu
    use CristhCasco\SgDnit\Concerns\CustomerFormTrait;
    ```
 
+   Para usar el mismo formulario con otra entidad (p. ej. proveedores), el componente
+   redefine `dnitModel()` (dónde buscar duplicados), `dnitEntityLabel()` (cómo se nombra
+   en los mensajes) y `payload()` (qué columnas guardar).
+
 ## Actualizar
 
 ```bash

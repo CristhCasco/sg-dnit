@@ -44,7 +44,7 @@ trait CustomerFormTrait
                 'regex:/^\d{3,9}$/',
                 function ($attribute, $value, $fail) {
                     if ($duplicate = $this->findDuplicate($value)) {
-                        $fail('Ya existe un cliente con este documento: ' . $duplicate->display_name . '.');
+                        $fail('Ya existe un ' . $this->dnitEntityLabel() . ' con este documento: ' . $duplicate->display_name . '.');
                     }
                 },
             ],
@@ -132,9 +132,26 @@ trait CustomerFormTrait
         $this->address = trim((string) $this->address);
     }
 
+    /**
+     * Modelo donde se buscan duplicados. Se puede redefinir en el componente para usar
+     * el mismo formulario con otra entidad (p. ej. proveedores).
+     */
+    protected function dnitModel()
+    {
+        return config('sg-dnit.customer_model', \App\Models\Customer::class);
+    }
+
+    /**
+     * Cómo se nombra la entidad en los mensajes ("Ya existe un cliente…").
+     */
+    protected function dnitEntityLabel()
+    {
+        return 'cliente';
+    }
+
     protected function findDuplicate($documentNumber)
     {
-        $customerModel = config('sg-dnit.customer_model', \App\Models\Customer::class);
+        $customerModel = $this->dnitModel();
 
         return $customerModel::where(function ($q) use ($documentNumber) {
                 $q->where('document_number', $documentNumber)
@@ -260,7 +277,7 @@ trait CustomerFormTrait
         }
 
         if ($duplicate = $this->findDuplicate($doc)) {
-            $this->addError('document_number', 'Ya existe un cliente con este documento: ' . $duplicate->display_name . '.');
+            $this->addError('document_number', 'Ya existe un ' . $this->dnitEntityLabel() . ' con este documento: ' . $duplicate->display_name . '.');
             return;
         }
 
@@ -272,7 +289,7 @@ trait CustomerFormTrait
             $this->dv = '';
             $this->dnitMessage = $dnit->hayDatos()
                 ? 'No figura como contribuyente en la DNIT: se registrará con CI (sin DV). Carga los datos a mano.'
-                : 'La base de la DNIT no está cargada. Ejecutá "php artisan dnit:importar".';
+                : 'La base de la DNIT no está cargada. Ejecuta "php artisan dnit:importar".';
             return;
         }
 
